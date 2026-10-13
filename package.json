@@ -1,0 +1,11 @@
+{
+  "name": "profertil-color-browser",
+  "version": "1.0.0",
+  "private": true,
+  "description": "La paleta del sistema de marca Profertil 2026 con sus códigos listos para copiar y las reglas de combinación.",
+  "scripts": {
+    "dev": "python3 -m http.server 5055"
+  },
+  "author": "Bong (https://bongstudio.ar)",
+  "license": "UNLICENSED"
+}
