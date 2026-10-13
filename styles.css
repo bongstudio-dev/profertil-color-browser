@@ -485,9 +485,14 @@ button:focus-visible, a:focus-visible {
     stroke-dasharray 0.9s var(--ease-out),
     stroke-dashoffset 0.9s var(--ease-out),
     stroke 0.55s ease,
-    opacity var(--transition-fast);
+    filter var(--transition-fast);
 }
-.slice:hover { opacity: 0.9; }
+.slice:hover { filter: brightness(1.07); }
+.pie-base {
+  stroke: none;
+  pointer-events: none;
+  transition: fill 0.55s ease, opacity 0.35s ease 0.5s;
+}
 
 .legend {
   display: flex;

@@ -90,9 +90,11 @@
           <div class="stage" id="stage">
             <svg class="pie" id="pie" viewBox="0 0 200 200" role="img" aria-label="Proporciones de la combinación">
               <g class="pie-group" id="pieGroup">
-                <circle class="slice" data-i="0" cx="100" cy="100" r="50" pathLength="100" />
+                <!-- Disco del color dominante por debajo y el dominante arriba de todo: tapan los filos entre porciones -->
+                <circle class="pie-base" id="pieBase" cx="100" cy="100" r="99.4" />
                 <circle class="slice" data-i="1" cx="100" cy="100" r="50" pathLength="100" />
                 <circle class="slice" data-i="2" cx="100" cy="100" r="50" pathLength="100" />
+                <circle class="slice" data-i="0" cx="100" cy="100" r="50" pathLength="100" />
               </g>
             </svg>
             <div class="legend" id="legend"></div>

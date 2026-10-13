@@ -98,7 +98,9 @@
   const comboChips = $("#comboChips");
   const stage = $("#stage");
   const pieGroup = $("#pieGroup");
-  const slices = Array.from(document.querySelectorAll(".slice"));
+  const pieBase = $("#pieBase");
+  // En el SVG el dominante va último para quedar arriba; acá se ordenan por rol.
+  const slices = Array.from(document.querySelectorAll(".slice")).sort((a, b) => a.dataset.i - b.dataset.i);
   const legend = $("#legend");
   const marfilToggle = $("#marfilToggle");
   const textGrid = $("#textGrid");
@@ -278,6 +280,8 @@
   // La torta se arma como en el manual: en sentido horario desde arriba van el
   // segundo color, el tercero y por último el dominante. La primaria gira 60°
   // (turn) para que el Verde quede centrado arriba.
+  const SEAM = 0.4;
+
   function pieLayout(combo) {
     const total = combo.parts.reduce((a, b) => a + b, 0);
     const size = combo.parts.map((p) => (p / total) * 100);
@@ -321,9 +325,14 @@
     if (fromZero) {
       // Al entrar a la vista las porciones se abren desde cero.
       slices.forEach((s) => { s.style.transition = "none"; s.style.strokeDasharray = "0 100"; });
+      pieBase.style.transition = "none";
+      pieBase.style.opacity = 0;
       void stage.offsetWidth;
       slices.forEach((s) => { s.style.transition = ""; });
+      pieBase.style.transition = "";
     }
+    pieBase.style.opacity = 1;
+    pieBase.style.fill = COLORS[combo.colors[0]].hex;
     pieGroup.style.setProperty("--rot", (offset - 90) + "deg");
     slices.forEach((s, i) => {
       const key = combo.colors[i];
@@ -335,7 +344,8 @@
       }
       s.dataset.key = key;
       s.style.stroke = COLORS[key].hex;
-      s.style.strokeDasharray = `${size[i]} 100`;
+      // Las porciones que no son la dominante se estiran un pelo por debajo de la siguiente.
+      s.style.strokeDasharray = `${size[i] + (i === 0 ? 0 : SEAM)} 100`;
     });
   }
 
