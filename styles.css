@@ -367,13 +367,14 @@ button:focus-visible, a:focus-visible {
   font-size: 0.82rem;
   line-height: 1.35;
   color: var(--muted);
-  min-height: 2.2em;
+  min-height: 2.7em;
 }
 
 .codes { display: flex; flex-direction: column; gap: 2px; }
 .code-row {
+  position: relative;
   display: grid;
-  grid-template-columns: 70px 1fr 18px;
+  grid-template-columns: 70px 1fr;
   align-items: center;
   gap: 8px;
   width: 100%;
@@ -397,7 +398,20 @@ button:focus-visible, a:focus-visible {
   color: var(--muted);
 }
 .code-v { font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.code-ic { width: 16px; height: 16px; color: var(--muted); opacity: 0; transition: opacity var(--transition-fast); }
+.code-ic {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  margin-top: -10px;
+  border-radius: 6px;
+  background-color: inherit;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
 .code-row:hover .code-ic, .code-row.is-copied .code-ic { opacity: 1; }
 .code-row.is-copied .code-ic { color: var(--verde-profertil); }
 .code-row.is-copied { background: rgba(45, 128, 53, 0.09); }
@@ -462,12 +476,20 @@ button:focus-visible, a:focus-visible {
 }
 .stage.on-marfil { background: var(--background); }
 
-.pie {
-  display: block;
+.pie-box {
+  position: relative;
   width: 100%;
   max-width: 340px;
   aspect-ratio: 1 / 1;
   margin: 0 auto;
+}
+/* El SVG llena la caja y la torta se dibuja lo más grande que entre, centrada. */
+.pie {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
   overflow: visible;
 }
 .pie-group {
@@ -699,6 +721,73 @@ button:focus-visible, a:focus-visible {
 }
 .bong-credit:hover { transform: translateY(-1px); border-color: rgba(6, 32, 79, 0.18); }
 
+/* ---------- Paleta a pantalla completa ---------- */
+/* En escritorio las tarjetas ocupan todo el alto disponible y lo que crece es
+   el campo de color; los códigos quedan abajo. */
+@media (min-width: 861px) {
+  .main {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 44px);
+  }
+  #view-paleta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  #paletteGrid {
+    flex: 1;
+    grid-auto-rows: 1fr;
+  }
+  /* Siempre filas parejas: 8 en una fila, 4 + 4 o 2 por fila, según el ancho. */
+  .main { container-type: inline-size; }
+  @container (max-width: 859px) {
+    #paletteGrid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @container (min-width: 860px) {
+    #paletteGrid { grid-template-columns: repeat(4, 1fr); }
+  }
+  /* Con cuatro tarjetas justas, los códigos van un poco más compactos */
+  @container (min-width: 860px) and (max-width: 1040px) {
+    .code-row { grid-template-columns: 56px 1fr; padding: 9px 8px; }
+    .code-v { font-size: 0.85rem; }
+  }
+  @container (min-width: 1760px) {
+    #paletteGrid { grid-template-columns: repeat(8, 1fr); }
+    .code-row { grid-template-columns: 60px 1fr; }
+    .color-note { min-height: 4.05em; }
+  }
+
+  /* Combinaciones: el panel ocupa todo el alto y la torta crece con él. */
+  #view-combos {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  #view-combos .panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .stage {
+    flex: 1;
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, 1fr);
+    padding: 26px;
+  }
+  .legend { max-width: 540px; }
+  .pie-box {
+    align-self: stretch;
+    max-width: none;
+    aspect-ratio: auto;
+    min-height: 260px;
+  }
+  .color-card .swatch {
+    flex: 1;
+    aspect-ratio: auto;
+    min-height: 150px;
+  }
+}
+
 /* ---------- Scrollbar ---------- */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -738,7 +827,7 @@ button:focus-visible, a:focus-visible {
   .stage-rule { min-width: 0; }
   /* En celular la torta va arriba y la lista abajo */
   .stage { grid-template-columns: 1fr; gap: 20px; padding: 20px 14px 14px; }
-  .pie { max-width: 240px; }
+  .pie-box { max-width: 240px; }
   .legend-item { grid-template-columns: 38px auto minmax(0, 1fr); gap: 10px; padding: 10px 12px 10px 10px; }
   .legend-dot { width: 38px; height: 38px; border-radius: 12px; }
   .legend-pct { font-size: 1.7rem; }
