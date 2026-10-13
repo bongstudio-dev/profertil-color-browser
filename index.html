@@ -88,14 +88,15 @@
           <div class="combo-chips" id="comboChips" role="group" aria-label="Combinaciones"></div>
 
           <div class="stage" id="stage">
-            <div class="stage-inner" id="stageInner">
-              <button class="stripe" data-i="0"><span class="stripe-label"><span class="stripe-pct">0%</span><span class="stripe-name"></span></span></button>
-              <button class="stripe" data-i="1"><span class="stripe-label"><span class="stripe-pct">0%</span><span class="stripe-name"></span></span></button>
-              <button class="stripe" data-i="2"><span class="stripe-label"><span class="stripe-pct">0%</span><span class="stripe-name"></span></span></button>
-            </div>
+            <svg class="pie" id="pie" viewBox="0 0 200 200" role="img" aria-label="Proporciones de la combinación">
+              <g class="pie-group" id="pieGroup">
+                <circle class="slice" data-i="0" cx="100" cy="100" r="50" pathLength="100" />
+                <circle class="slice" data-i="1" cx="100" cy="100" r="50" pathLength="100" />
+                <circle class="slice" data-i="2" cx="100" cy="100" r="50" pathLength="100" />
+              </g>
+            </svg>
+            <div class="legend" id="legend"></div>
           </div>
-
-          <div class="legend" id="legend"></div>
 
           <div class="stage-foot">
             <button class="btn btn-ghost btn-inline" id="copyCombo">Copiar combinación</button>

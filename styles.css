@@ -441,100 +441,89 @@ button:focus-visible, a:focus-visible {
   background: var(--panel);
   color: var(--text);
 }
-.chip-bar {
-  display: flex;
-  width: 46px;
-  height: 26px;
+.chip-pie {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
   border-radius: 999px;
-  overflow: hidden;
 }
-.chip-bar span { display: block; height: 100%; }
 
+/* La torta de proporciones, como en el manual (sección 03.06.01) */
 .stage {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  align-items: center;
+  gap: 34px;
+  padding: 30px;
   border-radius: var(--radius-xl);
-  background: var(--background);
-  padding: 0;
-  transition: padding var(--transition-smooth), box-shadow var(--transition-base);
-}
-.stage.on-marfil {
-  padding: 34px;
+  background: var(--panel);
   box-shadow: inset 0 0 0 1px var(--stroke);
+  transition: background-color 0.5s ease;
 }
-.stage-inner {
-  display: flex;
-  height: 360px;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  transition: border-radius var(--transition-smooth);
-}
-.stage.on-marfil .stage-inner { border-radius: var(--radius-lg); }
+.stage.on-marfil { background: var(--background); }
 
-.stripe {
-  position: relative;
-  flex: 0 1 0;
-  min-width: 0;
-  min-height: 0;
-  border: none;
-  padding: 0;
+.pie {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  overflow: visible;
+}
+.pie-group {
+  transform-origin: 100px 100px;
+  transform: rotate(var(--rot, -90deg));
+  transition: transform 0.9s var(--ease-out);
+}
+.slice {
+  fill: none;
+  stroke-width: 100;
+  stroke-dasharray: 0 100;
+  pointer-events: stroke;
   cursor: pointer;
-  color: #fff;
-  overflow: hidden;
-  text-align: left;
   transition:
-    flex-grow 0.9s var(--ease-out),
-    background-color 0.55s ease,
-    color 0.3s ease,
-    filter var(--transition-fast);
+    stroke-dasharray 0.9s var(--ease-out),
+    stroke-dashoffset 0.9s var(--ease-out),
+    stroke 0.55s ease,
+    opacity var(--transition-fast);
 }
-.stripe.is-light { color: var(--text); }
-.stripe:hover { filter: brightness(1.06); }
-.stripe:focus-visible { outline-offset: -4px; outline-color: currentColor; }
-.stripe-label {
-  position: absolute;
-  left: 22px;
-  bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  white-space: nowrap;
-  transition: opacity 0.35s ease, transform 0.6s var(--ease-out);
-}
-.stripe.is-empty .stripe-label { opacity: 0; transform: translateY(10px); }
-.stripe-pct {
-  font-family: "Familjen Grotesk", "DM Sans", sans-serif;
-  font-size: 2.4rem;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-.stripe-name { font-size: 0.95rem; font-weight: 600; opacity: 0.9; }
+.slice:hover { opacity: 0.9; }
 
 .legend {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 10px;
-  margin-top: 14px;
+  min-width: 0;
 }
 .legend-item {
   display: grid;
-  grid-template-columns: 40px 1fr auto;
+  grid-template-columns: 44px auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px 10px 10px;
+  gap: 14px;
+  padding: 12px 18px 12px 12px;
   border: 1px solid var(--stroke);
   border-radius: var(--radius-md);
   background: var(--background);
   color: var(--text);
   text-align: left;
   cursor: pointer;
-  transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), background-color 0.5s ease;
   animation: itemSlideUp 0.45s var(--ease-out) backwards;
 }
-.legend-item:hover { transform: translateY(-1px); border-color: rgba(6, 32, 79, 0.18); background: var(--panel); }
+.stage.on-marfil .legend-item { background: var(--panel); }
+.legend-item:hover { transform: translateY(-1px); border-color: rgba(6, 32, 79, 0.18); }
 .legend-item.is-copied { border-color: var(--verde-profertil); }
-.legend-dot { width: 40px; height: 40px; border-radius: 13px; }
+.legend-dot { width: 44px; height: 44px; border-radius: 14px; }
 .legend-dot.has-edge { box-shadow: inset 0 0 0 1px var(--stroke); }
+.legend-pct {
+  min-width: 3.3ch;
+  font-family: "Familjen Grotesk", "DM Sans", sans-serif;
+  font-size: 2.1rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
 .legend-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .legend-text small {
   font-size: 0.66rem;
@@ -543,9 +532,9 @@ button:focus-visible, a:focus-visible {
   text-transform: uppercase;
   color: var(--muted);
 }
-.legend-text strong { font-size: 0.95rem; font-weight: 600; }
+.legend-text strong { font-size: 0.98rem; font-weight: 600; }
 .legend-code {
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   font-weight: 500;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
@@ -730,6 +719,9 @@ button:focus-visible, a:focus-visible {
   .toolbar { margin-bottom: 16px; }
   .main { padding-bottom: 72px; }
 }
+@media (max-width: 1080px) {
+  .stage { grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 22px; padding: 22px; }
+}
 @media (max-width: 620px) {
   .toolbar { flex-direction: column; align-items: stretch; }
   .toolbar-format { justify-content: space-between; }
@@ -739,11 +731,13 @@ button:focus-visible, a:focus-visible {
   .stage-head { flex-direction: column; align-items: stretch; gap: 12px; }
   .stage-head .pill-group { justify-content: space-between; }
   .stage-rule { min-width: 0; }
-  /* En celular las franjas se apilan: la proporción pasa a leerse en alto */
-  .stage-inner { flex-direction: column; height: 440px; }
-  .stage.on-marfil { padding: 20px; }
-  .stripe-label { left: 18px; bottom: 12px; flex-direction: row; align-items: baseline; gap: 10px; }
-  .stripe-pct { font-size: 1.7rem; }
+  /* En celular la torta va arriba y la lista abajo */
+  .stage { grid-template-columns: 1fr; gap: 20px; padding: 20px 14px 14px; }
+  .pie { max-width: 240px; }
+  .legend-item { grid-template-columns: 38px auto minmax(0, 1fr); gap: 10px; padding: 10px 12px 10px 10px; }
+  .legend-dot { width: 38px; height: 38px; border-radius: 12px; }
+  .legend-pct { font-size: 1.7rem; }
+  .legend-code { grid-column: 2 / -1; margin-top: -4px; }
   .stage-foot { flex-direction: column; align-items: stretch; }
   /* Paleta a una columna: en dos, los códigos largos no entran */
   .grid { grid-template-columns: 1fr; gap: 12px; }

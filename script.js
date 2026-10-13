@@ -8,7 +8,7 @@
     celeste: { name: "Celeste", role: "Secundario", note: "Complementario del Azul.", hex: "#4086FF", rgb: [64, 134, 255], cmyk: [75, 47, 0, 0], pms: "PQ 2727C" },
     verde: { name: "Verde", role: "Primario", note: "La tierra que nutrimos.", hex: "#2D8035", rgb: [45, 128, 53], cmyk: [65, 0, 59, 50], pms: "356C" },
     verdeClaro: { name: "Verde Claro", role: "Secundario", note: "Complementario del Verde.", hex: "#5EB53A", rgb: [94, 181, 58], cmyk: [48, 0, 68, 29], pms: "361C" },
-    amarillo: { name: "Amarillo", role: "Primario", note: "Los alimentos que generamos.", hex: "#EABA2C", rgb: [234, 186, 44], cmyk: [0, 21, 81, 8], pms: "7408C", light: true },
+    amarillo: { name: "Amarillo", role: "Primario", note: "Los alimentos que generamos.", hex: "#EABA2C", rgb: [234, 186, 44], cmyk: [0, 21, 81, 8], pms: "7408C" },
     naranja: { name: "Naranja", role: "Secundario", note: "Complementario del Amarillo.", hex: "#E57F19", rgb: [229, 127, 25], cmyk: [0, 45, 89, 10], pms: "138C" },
     marfil: { name: "Marfil", role: "Soporte", note: "Reemplaza al blanco puro: fondo, separador y descanso.", hex: "#FFFEEF", rgb: [255, 254, 239], cmyk: [0, 0, 10, 0], pms: "P 1-2 U", light: true, edge: true },
     terra: { name: "Terra", role: "Auxiliar", note: "No domina: suma tierra, raíces y comunidad.", hex: "#8A4818", rgb: [138, 72, 24], cmyk: [0, 48, 83, 46], pms: "2315C" },
@@ -34,7 +34,7 @@
       label: "Primaria",
       rule: "Los 3 colores fundacionales en proporción equilibrada. Ninguno domina sobre el otro.",
       roles: ["Fundacional", "Fundacional", "Fundacional"],
-      combos: [{ colors: ["azul", "verde", "amarillo"], parts: [1, 1, 1] }],
+      combos: [{ colors: ["azul", "verde", "amarillo"], parts: [1, 1, 1], turn: -60 }],
     },
     secundarias: {
       label: "Secundarias",
@@ -52,10 +52,10 @@
       rule: "Combinaciones de 2 o 3 familias, siempre con un color protagonista. Más riqueza cromática para las piezas que la necesitan.",
       roles: ["Protagonista", "Complementario", "Acento"],
       combos: [
-        { colors: ["azul", "celeste", "verde"], parts: [60, 25, 15] },
-        { colors: ["verde", "verdeClaro", "amarillo"], parts: [60, 25, 15] },
-        { colors: ["amarillo", "naranja", "verde"], parts: [60, 25, 15] },
-        { colors: ["amarillo", "naranja", "terra"], parts: [60, 25, 15] },
+        { colors: ["azul", "celeste", "verde"], parts: [50, 25, 25] },
+        { colors: ["verde", "verdeClaro", "amarillo"], parts: [50, 25, 25] },
+        { colors: ["amarillo", "naranja", "verde"], parts: [50, 25, 25] },
+        { colors: ["amarillo", "naranja", "terra"], parts: [50, 25, 25] },
       ],
     },
   };
@@ -97,7 +97,8 @@
   const levelRule = $("#levelRule");
   const comboChips = $("#comboChips");
   const stage = $("#stage");
-  const stripes = Array.from(document.querySelectorAll(".stripe"));
+  const pieGroup = $("#pieGroup");
+  const slices = Array.from(document.querySelectorAll(".slice"));
   const legend = $("#legend");
   const marfilToggle = $("#marfilToggle");
   const textGrid = $("#textGrid");
@@ -269,9 +270,31 @@
     const level = LEVELS[state.level];
     comboChips.innerHTML = level.combos.map((combo, i) => `
       <button class="combo-chip${i === state.combo ? " active" : ""}" data-combo="${i}" style="animation-delay:${i * 50}ms">
-        <span class="chip-bar">${combo.colors.map((k, j) => `<span style="flex:${combo.parts[j]};background:${COLORS[k].hex}"></span>`).join("")}</span>
+        <span class="chip-pie" style="background:${pieGradient(combo)}"></span>
         ${comboName(combo)}
       </button>`).join("");
+  }
+
+  // La torta se arma como en el manual: en sentido horario desde arriba van el
+  // segundo color, el tercero y por último el dominante. La primaria gira 60°
+  // (turn) para que el Verde quede centrado arriba.
+  function pieLayout(combo) {
+    const total = combo.parts.reduce((a, b) => a + b, 0);
+    const size = combo.parts.map((p) => (p / total) * 100);
+    const start = [];
+    let at = 0;
+    [1, 2, 0].forEach((i) => {
+      start[i] = at;
+      if (i < size.length) at += size[i];
+    });
+    return { size, start, offset: combo.turn || 0 };
+  }
+
+  function pieGradient(combo) {
+    const { size, start, offset } = pieLayout(combo);
+    const stops = [1, 2, 0].filter((i) => i < size.length)
+      .map((i) => `${COLORS[combo.colors[i]].hex} ${start[i]}% ${start[i] + size[i]}%`);
+    return `conic-gradient(from ${offset}deg, ${stops.join(", ")})`;
   }
 
   function renderLegend() {
@@ -281,42 +304,38 @@
     legend.innerHTML = combo.colors.map((key, i) => {
       const c = COLORS[key];
       return `
-      <button class="legend-item" data-key="${key}" style="animation-delay:${80 + i * 60}ms" aria-label="Copiar ${c.name} en ${FORMATS[state.format].label}">
+      <button class="legend-item" data-key="${key}" style="animation-delay:${80 + i * 70}ms" aria-label="${c.name}, ${pct[i]}%. Copiar en ${FORMATS[state.format].label}">
         <span class="legend-dot${c.edge ? " has-edge" : ""}" style="background:${c.hex}"></span>
-        <span class="legend-text"><small>${level.roles[i]} · ${pct[i]}%</small><strong>${c.name}</strong></span>
+        <span class="legend-pct">${shownPct[i]}%</span>
+        <span class="legend-text"><small>${level.roles[i]}</small><strong>${c.name}</strong></span>
         <span class="legend-code">${formatValue(key, state.format)}</span>
       </button>`;
     }).join("");
+    for (let i = combo.colors.length; i < shownPct.length; i++) shownPct[i] = 0;
+    legend.querySelectorAll(".legend-pct").forEach((el, i) => tweenPct(el, i, pct[i]));
   }
 
   function paintStage(fromZero) {
     const combo = currentCombo();
-    const pct = percents(combo.parts);
+    const { size, start, offset } = pieLayout(combo);
     if (fromZero) {
-      // Al entrar a la vista las franjas crecen desde cero.
-      stripes.forEach((s) => { s.style.transition = "none"; s.style.flexGrow = 0; });
-      shownPct.fill(0);
+      // Al entrar a la vista las porciones se abren desde cero.
+      slices.forEach((s) => { s.style.transition = "none"; s.style.strokeDasharray = "0 100"; });
       void stage.offsetWidth;
-      stripes.forEach((s) => { s.style.transition = ""; });
+      slices.forEach((s) => { s.style.transition = ""; });
     }
-    stripes.forEach((s, i) => {
+    pieGroup.style.setProperty("--rot", (offset - 90) + "deg");
+    slices.forEach((s, i) => {
       const key = combo.colors[i];
-      const empty = !key;
-      s.classList.toggle("is-empty", empty);
-      s.tabIndex = empty ? -1 : 0;
-      s.style.flexGrow = empty ? 0 : combo.parts[i];
-      if (empty) {
-        shownPct[i] = 0;
+      s.style.strokeDashoffset = -start[i];
+      if (!key) {
+        s.style.strokeDasharray = "0 100";
         s.removeAttribute("data-key");
         return;
       }
-      const c = COLORS[key];
       s.dataset.key = key;
-      s.style.backgroundColor = c.hex;
-      s.classList.toggle("is-light", !!c.light);
-      s.querySelector(".stripe-name").textContent = c.name;
-      s.setAttribute("aria-label", `${c.name}, ${pct[i]}%. Copiar en ${FORMATS[state.format].label}`);
-      tweenPct(s.querySelector(".stripe-pct"), i, pct[i]);
+      s.style.stroke = COLORS[key].hex;
+      s.style.strokeDasharray = `${size[i]} 100`;
     });
   }
 
@@ -324,6 +343,7 @@
     const level = LEVELS[state.level];
     levelPills.querySelectorAll(".pill").forEach((p) => p.classList.toggle("active", p.dataset.level === state.level));
     levelRule.textContent = level.rule;
+    if (fromZero) shownPct.fill(0);
     renderChips();
     renderLegend();
     paintStage(fromZero);
@@ -457,8 +477,8 @@
   });
 
   stage.addEventListener("click", (e) => {
-    const stripe = e.target.closest(".stripe");
-    if (stripe && stripe.dataset.key) copyColor(stripe.dataset.key, state.format);
+    const slice = e.target.closest(".slice");
+    if (slice && slice.dataset.key) copyColor(slice.dataset.key, state.format);
   });
 
   legend.addEventListener("click", (e) => {
