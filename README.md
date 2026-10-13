@@ -1,5 +1,7 @@
 # Profertil · Color Browser
 
+> **Esta herramienta se mudó a [Tools Profertil](https://bongstudio-dev.github.io/profertil-tools/color/)** (repo [`profertil-tools`](https://github.com/bongstudio-dev/profertil-tools)). Este repo queda como redirección: el `index.html` solo reenvía al sitio nuevo y el resto del código se conserva como archivo.
+
 Herramienta web estática (HTML + CSS + JS vanilla, sin build step) para consultar la paleta del **Sistema de marca Profertil 2026**: copiar los códigos de cada color y elegir una combinación del manual. Comparte el lenguaje visual del [Icon Browser](https://github.com/bongstudio-dev/profertil-icon-browser) y del [Pattern Generator](https://github.com/bongstudio-dev/profertil-pattern-generator).
 
 Publicada en https://bongstudio-dev.github.io/profertil-color-browser/
